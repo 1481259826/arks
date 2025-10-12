@@ -1,0 +1,49 @@
+# ---- OS / Editor ----
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# ---- Virtual Envs ----
+.venv/
+venv/
+ENV/
+env/
+.env
+.env.*
+
+# ---- Jupyter ----
+.ipynb_checkpoints/
+
+# ---- LangChain / Chroma vector store ----
+vector_store/
+chromadb/
+chroma/
+*.sqlite3
+
+# ---- Logs & Outputs ----
+*.log
+*.tmp
+tmp/
+lifecycle_analysis_output*.txt
+
+# ---- Build / Dist ----
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
