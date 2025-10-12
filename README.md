@@ -22,7 +22,7 @@
 ## 项目结构
 ```
 c:\code\arkUI
-├── Rag.py                      # RAG 生命周期分析主脚本
+├── arkui_lifecycle_rag.py      # RAG 生命周期分析主脚本
 ├── ReAct.py                    # ReAct 智能体示例
 ├── Plan_n_Execute.py           # 计划-执行智能体示例
 ├── arkUI.ipynb                 # Notebook 演示（加载 PDF、构建 RAG）
@@ -35,14 +35,14 @@ c:\code\arkUI
 ## 快速开始（RAG 生命周期分析）
 1. 准备数据索引：将 `arkUI自定义组件生命周期.pdf` 放在项目根目录。
 2. 首次索引（仅第一次需要）：
-   - 打开 `Rag.py`，在文件末尾的入口处取消注释 `index_pdf_documents()`，运行一次：
-     - `python Rag.py`
+   - 打开 `arkui_lifecycle_rag.py`，在文件末尾的入口处取消注释 `index_pdf_documents()`，运行一次：
+     - `python arkui_lifecycle_rag.py`
    - 完成后会在 `vector_store/` 生成向量索引。
 3. 正常运行分析：恢复注释 `index_pdf_documents()`，确保入口调用的是 `main()`，然后执行：
-   - `python Rag.py`
+   - `python arkui_lifecycle_rag.py`
    - 结果会保存到 `lifecycle_analysis_output.txt`（或你自己命名的文件）。
 
-## 使用说明（Rag.py）
+## 使用说明（arkui_lifecycle_rag.py）
 - 配置项（见 `CONFIG`）：
   - `vector_store_path`：向量库持久化目录。
   - `input_file`：作为用户场景与问题的输入文件（用作 `question`）。
