@@ -1,96 +1,215 @@
-# ArkUI 生命周期分析与智能代理示例
+# ArkUI 生命周期分析 RAG 系统
 
-本项目围绕 ArkUI 自定义组件生命周期的理解与分析，提供基于 RAG（检索增强生成）的推理脚本，以及两类智能体示例（ReAct、Plan-and-Execute）。你可以用本项目从官方文档或 PDF 中检索相关片段，结合你提供的场景，自动生成结构化的生命周期调用顺序分析结果。
+本项目基于 RAG（检索增强生成）技术，从 ArkUI 官方文档中检索相关片段，结合用户提供的 ArkTS 代码场景，自动生成结构化的生命周期函数调用顺序分析结果。
 
-## 功能概览
-- RAG 生命周期分析：从向量库检索 ArkUI 文档片段，结合输入场景输出严格 JSON 的分析结果。
-- ReAct 代理示例：可调用检索工具按步骤思考并回答 ArkUI 相关问题。
-- Plan-and-Execute 代理示例：先规划再执行，适合多步骤需求。
+## 功能特性
+
+- **RAG 生命周期分析**：从向量库检索 ArkUI 文档片段，结合输入场景输出严格 JSON 格式的分析结果
+- **模块化架构**：代码结构清晰，配置、核心逻辑、工具函数分离
+- **命令行工具**：支持索引和分析两种操作模式
+- **灵活配置**：支持 YAML 配置文件和命令行参数
 
 ## 环境准备
-- 建议 Python 版本：`3.9+`
-- 依赖安装（按需）：
-  - `pip install langchain langchain-openai langchain-community langchain-chroma chromadb python-dotenv pypdf`
-  - 如需运行 Notebook：`pip install jupyter ipykernel`
 
-## 配置密钥
-在项目根目录创建或编辑 `.env` 文件：
-- `OPENAI_API_KEY=你的密钥`
-- `SERPAPI_API_KEY=你的密钥`（仅 ReAct/Plan-and-Execute 示例需要）
-- 可选：`OPENAI_API_BASE=你的自定义网关地址`
+### Python 版本
+- 建议：Python 3.9+
+
+### 依赖安装
+```bash
+pip install -r requirements.txt
+```
+
+### 环境变量配置
+复制 `.env.example` 为 `.env`，并填写你的 API 密钥：
+```bash
+cp .env.example .env
+```
+
+编辑 `.env` 文件：
+```
+OPENAI_API_KEY=你的密钥
+OPENAI_API_BASE=你的自定义网关地址（可选）
+```
 
 ## 项目结构
+
 ```
-c:\code\arkUI
-├── arkui_lifecycle_rag.py      # RAG 生命周期分析主脚本
-├── ReAct.py                    # ReAct 智能体示例
-├── Plan_n_Execute.py           # 计划-执行智能体示例
-├── arkUI.ipynb                 # Notebook 演示（加载 PDF、构建 RAG）
-├── arkUI自定义组件生命周期.pdf   # ArkUI 生命周期官方文档 PDF（示例）
-├── input.txt                   # 输入场景文本（RAG 的 question）
-├── lifecycle_analysis_output*.txt # RAG 输出的 JSON 结果
-└── vector_store/               # Chroma 向量库持久化目录
+arkUI/
+├── src/                          # 源代码目录
+│   ├── __init__.py
+│   ├── config.py                 # 配置管理
+│   ├── rag_engine.py            # RAG 核心引擎
+│   ├── vectorstore.py           # 向量库管理
+│   └── utils.py                 # 工具函数
+├── data/                         # 数据目录
+│   ├── docs/                     # 文档资源
+│   │   └── arkUI自定义组件生命周期.pdf
+│   ├── inputs/                   # 输入示例
+│   │   ├── input.txt
+│   │   └── input1.txt
+│   └── outputs/                  # 输出结果
+├── notebooks/                    # Jupyter notebooks
+│   └── arkUI.ipynb
+├── vector_store/                 # 向量库（自动生成）
+├── main.py                       # 主入口文件
+├── config.yaml                   # 配置文件
+├── requirements.txt              # 依赖管理
+├── .env.example                  # 环境变量示例
+├── .gitignore                    # Git 忽略文件
+├── README.md                     # 项目说明
+└── CLAUDE.md                     # Claude Code 指南
 ```
 
-## 快速开始（RAG 生命周期分析）
-1. 准备数据索引：将 `arkUI自定义组件生命周期.pdf` 放在项目根目录。
-2. 首次索引（仅第一次需要）：
-   - 打开 `arkui_lifecycle_rag.py`，在文件末尾的入口处取消注释 `index_pdf_documents()`，运行一次：
-     - `python arkui_lifecycle_rag.py`
-   - 完成后会在 `vector_store/` 生成向量索引。
-3. 正常运行分析：恢复注释 `index_pdf_documents()`，确保入口调用的是 `main()`，然后执行：
-   - `python arkui_lifecycle_rag.py`
-   - 结果会保存到 `lifecycle_analysis_output.txt`（或你自己命名的文件）。
+## 快速开始
 
-## 使用说明（arkui_lifecycle_rag.py）
-- 配置项（见 `CONFIG`）：
-  - `vector_store_path`：向量库持久化目录。
-  - `input_file`：作为用户场景与问题的输入文件（用作 `question`）。
-  - `model_name`：大模型名称（按你的服务商可用模型填写）。
-  - `temperature`：生成温度，`0` 更稳定可控。
-  - `chunk_size`：文档分块大小。
-  - `chunk_overlap`：相邻分块的重叠长度，常用 100–250（中文字符）。
-  - `retriever_k`：每次检索返回的片段数（Top‑k）。
+### 1. 首次索引（仅第一次需要）
 
-- 提示模板（`PROMPT_TEMPLATE`）占位符：
-  - `context`：从向量库检索到的参考片段集合。
-  - `question`：你的输入场景（来自 `input.txt` 的全文）。
-  - 输出字段包含：
-    - `analysis`：逐步的生命周期调用序列（含组件名、方法名、触发原因）。
-    - `component_tree`：组件层级关系的字符串描述，例如 `Parent → Child1, Child2`。
-    - `summary`：简短总结。
+将 PDF 文档放在 `data/docs/` 目录下，然后运行：
 
-- 运行流程：
-  - 读取 `input.txt` 到字符串 `scene_text`。
-  - 检索向量库，格式化片段为 `context`。
-  - 用 `PromptTemplate` 组合 `context` 与 `question`，交给 LLM 生成 JSON。
+```bash
+python main.py index
+```
 
-## 示例输入（input.txt）
-你可以在 `input.txt` 编写组件与交互场景，例如首次加载父子组件、按钮切换子组件显隐等。脚本会基于检索到的 ArkUI 文档片段，输出调用顺序与原因说明。
+这将在 `vector_store/` 目录下生成向量索引。
 
-## 其他脚本
-- `ReAct.py`
-  - 作用：演示 ReAct 代理如何用工具（如 `serpapi`）获取网页内容并回答问题。
-  - 运行：`python ReAct.py`
-- `Plan_n_Execute.py`
-  - 作用：演示先规划后执行的智能体，适合多步骤需求。
-  - 运行：`python Plan_n_Execute.py`
-- `arkUI.ipynb`
-  - 作用：Notebook 形式的 RAG 演示，便于交互式探索与可视化。
+### 2. 执行生命周期分析
+
+准备你的 ArkTS 代码场景，保存到 `data/inputs/input.txt`，然后运行：
+
+```bash
+python main.py analyze
+```
+
+或者使用默认命令（不指定子命令时默认执行分析）：
+
+```bash
+python main.py
+```
+
+结果将保存到 `data/outputs/` 目录。
+
+### 3. 高级用法
+
+指定自定义输入文件：
+```bash
+python main.py analyze --input data/inputs/custom_input.txt
+```
+
+指定输出文件名：
+```bash
+python main.py analyze --output my_analysis.txt
+```
+
+强制重新索引：
+```bash
+python main.py index --force
+```
+
+使用自定义配置文件：
+```bash
+python main.py analyze --config custom_config.yaml
+```
+
+## 配置说明
+
+编辑 `config.yaml` 文件可以调整以下参数：
+
+### 路径配置
+- `vector_store_path`: 向量库存储路径
+- `input_file`: 默认输入文件路径
+- `output_dir`: 输出目录
+- `pdf_path`: PDF 文档路径
+
+### LLM 配置
+- `model_name`: 大模型名称（如 "deepseek-chat", "gpt-4o-mini"）
+- `temperature`: 生成温度（0 表示确定性输出）
+
+### 文档处理配置
+- `chunk_size`: 文档分块大小（默认 1000）
+- `chunk_overlap`: 分块重叠长度（默认 200）
+- `retriever_k`: 检索返回的文档片段数量（默认 4）
+
+## 输出格式
+
+系统生成的 JSON 格式包含：
+
+```json
+{
+  "lifecycle": {
+    "functions": [
+      {
+        "name": "函数名",
+        "scope": "page 或 component",
+        "description": "触发时机和作用说明"
+      }
+    ],
+    "order": [
+      {
+        "pred": "前驱函数",
+        "succ": "后继函数"
+      }
+    ],
+    "dynamicBehavior": "动态场景下的生命周期变化说明"
+  }
+}
+```
+
+## 示例输入
+
+在 `data/inputs/input.txt` 中编写 ArkTS 代码示例：
+
+```typescript
+@Entry
+@Component
+struct SimpleDemo {
+  @State showChild: boolean = true
+
+  aboutToAppear() {
+    console.info('SimpleDemo aboutToAppear')
+  }
+
+  build() {
+    Column() {
+      if (this.showChild) {
+        SimpleChild()
+      }
+    }
+  }
+}
+```
+
+## 调参建议
+
+- **初学者**：使用默认配置即可
+- **答案缺少上下文**：增加 `retriever_k` 或 `chunk_size`
+- **结果冗余**：减小 `retriever_k` 或 `chunk_overlap`
+- **输出不稳定**：确保 `temperature=0`
+
+## Jupyter Notebook
+
+如需交互式探索，可以使用：
+
+```bash
+jupyter notebook notebooks/arkUI.ipynb
+```
 
 ## 常见问题
-- 向量库不存在或为空：
-  - 先执行一次 `index_pdf_documents()` 进行索引；确保 PDF 路径正确。
-- 报错未设置密钥：
-  - 检查 `.env` 中的 `OPENAI_API_KEY` 与（可选）`SERPAPI_API_KEY`。
-- 输出不是有效 JSON：
-  - 设定 `temperature=0`，保证模板约束；或提高 `retriever_k` 与优化 `chunk_size/chunk_overlap`，提升检索质量。
-- 检索速度慢或噪声多：
-  - 减小 `retriever_k` 或 `chunk_overlap`；适当调小 `chunk_size`。
 
-## 调参与建议
-- 初学者建议：`chunk_size=1000`、`chunk_overlap=200`、`retriever_k=4`、`temperature=0`。
-- 若答案缺上下文：增加 `retriever_k`，或增大 `chunk_size/overlap`。
-- 若结果冗余：减小 `retriever_k/overlap`。
+### 向量库不存在
+运行 `python main.py index` 创建索引。
 
-—— 祝你用 RAG 快速梳理 ArkUI 自定义组件的生命周期！
+### API 密钥错误
+检查 `.env` 文件中的 `OPENAI_API_KEY` 配置。
+
+### 输出不是有效 JSON
+- 确保 `temperature=0`
+- 提高 `retriever_k` 改善检索质量
+- 优化 `chunk_size` 和 `chunk_overlap`
+
+## 旧版本兼容
+
+旧版本的 `arkui_lifecycle_rag.py` 仍然可用，但建议使用新的模块化版本（`main.py`）。
+
+---
+
+祝你用 RAG 快速梳理 ArkUI 自定义组件的生命周期！

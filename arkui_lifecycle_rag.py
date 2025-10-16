@@ -53,6 +53,13 @@ PROMPT_TEMPLATE = """你是一位精通 HarmonyOS ArkTS 生命周期机制的专
     "dynamicBehavior": "说明动态情况下（如条件渲染、状态切换）生命周期的调用变化"
   }}
 }}
+
+说明：
+1. 一个functions列表：包含所有的生命周期函数方法，不用区分组件。
+2. 一个order列表：包含所有的生命周期函数先后顺序，两个为一组，用pred和succ表示。
+例如：共有三个生命周期函数，onCreate, onResume, onDestory
+functions: [onCreate, onResume, onDestory]
+order: [{{pred: onCreate, succ: onResume}}, {{pred: onResume, succ: onDestory}}]
 ```
 3. 合并多个组件的生命周期：
 - 将 Parent、Child 或其他组件中的生命周期函数统一输出。

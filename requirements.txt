@@ -1,0 +1,19 @@
+# LangChain Core
+langchain>=0.1.0
+langchain-openai>=0.0.5
+langchain-community>=0.0.20
+langchain-chroma>=0.1.0
+
+# Vector Store
+chromadb>=0.4.22
+
+# Document Processing
+pypdf>=4.0.0
+
+# Utilities
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+
+# Optional: For Jupyter notebooks
+jupyter>=1.0.0
+ipykernel>=6.29.0

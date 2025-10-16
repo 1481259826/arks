@@ -1,0 +1,16 @@
+# ArkUI Lifecycle RAG 系统配置文件
+
+# 路径配置
+vector_store_path: "./vector_store"
+input_file: "./data/inputs/input.txt"
+output_dir: "./data/outputs"
+pdf_path: "./data/docs/arkUI自定义组件生命周期.pdf"
+
+# LLM 配置
+model_name: "deepseek-chat"
+temperature: 0
+
+# 文档处理配置
+chunk_size: 1000
+chunk_overlap: 200
+retriever_k: 4
