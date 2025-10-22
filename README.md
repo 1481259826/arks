@@ -299,7 +299,7 @@ dot -Tpng output1.dot -o output1.png
 
 ```bash
 # 1. Python: 索引文档（首次运行）
-conda activate CreatPPT
+conda activate 你的虚拟环境名
 python main.py index
 
 # 2. Python: 分析 ArkTS 代码
@@ -605,7 +605,7 @@ A: CallGraph 使用邻接表，算法复杂度：
 在首次使用前，运行验证脚本检查配置：
 
 ```bash
-conda activate CreatPPT
+conda activate 你的虚拟环境名
 python scripts/verify_setup.py
 ```
 
