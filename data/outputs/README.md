@@ -10,8 +10,6 @@ data/outputs/
 │   └── lifecycle_analysis_YYYYMMDD_HHMMSS.json
 ├── visualizations/    # TypeScript 生成的 Graphviz DOT 可视化文件
 │   └── lifecycle_analysis_YYYYMMDD_HHMMSS.dot
-├── legacy/           # 旧版本的 .txt 格式文件（已弃用）
-│   └── *.txt
 └── archives/         # 归档和临时导出文件
     └── *_export.json
 ```
@@ -60,8 +58,7 @@ python scripts/organize_outputs.py
 **整理规则**：
 - `*.json` → `json/` 目录（或 `archives/` 如果是临时导出文件）
 - `*.dot` → `visualizations/` 目录
-- `*.txt` → `legacy/` 目录
-- 其他文件保持不动
+- 其他文件 → `archives/` 目录
 
 ## 📝 文件命名规范
 
@@ -80,7 +77,6 @@ python scripts/organize_outputs.py
 ```gitignore
 json/*.json
 visualizations/*.dot
-legacy/*.txt
 archives/*
 ```
 
@@ -118,9 +114,6 @@ Get-ChildItem data/outputs -Directory | ForEach-Object { "$($_.Name): $((Get-Chi
 ### Q: 为什么要分离目录？
 A: 保持文件类型清晰分离，便于管理和版本控制，避免根目录混乱。
 
-### Q: 旧的 .txt 文件还能用吗？
-A: 可以。使用 `npm run convert` 将 `legacy/*.txt` 转换为 `json/*.json`。
-
 ### Q: 如何恢复到单一目录结构？
 A: 运行 `mv data/outputs/*/* data/outputs/` 将所有文件移回根目录（不推荐）。
 
@@ -130,5 +123,4 @@ A: 运行 `mv data/outputs/*/* data/outputs/` 将所有文件移回根目录（�
 |------|------|
 | `python main.py analyze` | 生成 JSON 到 `json/` |
 | `npm run visualize` | 从 `json/` 生成 DOT 到 `visualizations/` |
-| `npm run convert` | 转换 `legacy/*.txt` 到 `json/*.json` |
 | `python scripts/organize_outputs.py` | 整理根目录文件 |

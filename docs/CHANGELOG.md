@@ -12,7 +12,6 @@
 data/outputs/
 ├── json/              # Python 生成的 JSON 文件
 ├── visualizations/    # TypeScript 生成的 DOT 文件
-├── legacy/           # 旧的 .txt 文件
 └── archives/         # 归档和临时文件
 ```
 

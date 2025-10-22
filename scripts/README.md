@@ -10,7 +10,6 @@
 **功能**：
 - 将 JSON 文件移动到 `json/` 子目录
 - 将 DOT 可视化文件移动到 `visualizations/` 子目录
-- 将旧的 .txt 文件移动到 `legacy/` 子目录
 - 将其他文件移动到 `archives/` 子目录
 
 **使用方法**：

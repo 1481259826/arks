@@ -88,7 +88,6 @@ arkUI/
 │   └── outputs/                 # 分析结果
 │       ├── json/                # JSON 输出
 │       ├── visualizations/      # DOT 可视化文件
-│       ├── legacy/              # 旧版 .txt 文件
 │       └── archives/            # 归档文件
 ├── notebooks/
 │   └── arkUI.ipynb              # Jupyter 探索笔记

@@ -16,7 +16,9 @@
       "Bash(python scripts/organize_outputs.py:*)",
       "Bash(git push:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\ndocs: 更新 README 中的虚拟环境名称为通用占位符\n\n- 将硬编码的 ''CreatPPT'' 环境名替换为 ''你的虚拟环境名''\n- 添加 git push 到 Claude Code 命令白名单\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\ndocs: 更新 README 中的虚拟环境名称为通用占位符\n\n- 将硬编码的 ''CreatPPT'' 环境名替换为 ''你的虚拟环境名''\n- 添加 git push 到 Claude Code 命令白名单\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nchore: 删除 legacy 输出目录\n\n- 移除不再使用的 data/outputs/legacy/ 目录\n- 简化输出目录结构\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

@@ -159,7 +159,6 @@ data/                 # All data files
   └── outputs/        # Generated analysis results (organized)
       ├── json/       # Python RAG generated JSON files
       ├── visualizations/  # TypeScript generated DOT files
-      ├── legacy/     # Old .txt format files
       └── archives/   # Archived/temporary files
 scripts/              # Utility scripts
   └── organize_outputs.py  # Organize output directory
