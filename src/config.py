@@ -24,7 +24,8 @@ class Config:
         # 默认配置
         self.vector_store_path = self.project_root / "vector_store"
         self.input_file = self.project_root / "data" / "inputs" / "input.txt"
-        self.output_dir = self.project_root / "data" / "outputs"
+        self.output_dir = self.project_root / "data" / "outputs" / "json"
+        self.visualization_dir = self.project_root / "data" / "outputs" / "visualizations"
         self.pdf_path = self.project_root / "data" / "docs" / "arkUI自定义组件生命周期.pdf"
 
         # LLM 配置
@@ -96,7 +97,6 @@ PROMPT_TEMPLATE = """你是一位精通 HarmonyOS ArkTS 生命周期机制的专
       {{
         "name": "函数名（如 aboutToAppear、build）",
         "scope": "page 或 component 或 both",
-        "type": "lifecycle | build | other",
         "description": "简要说明触发时机和作用"
       }}
     ],
@@ -123,6 +123,12 @@ PROMPT_TEMPLATE = """你是一位精通 HarmonyOS ArkTS 生命周期机制的专
    - 按照实际执行顺序，将相邻的两个函数调用组成一对
    - 例如：执行顺序是 A → B → C，则 order 为 [{{pred: A, succ: B}}, {{pred: B, succ: C}}]
    - 默认情况下，列出应用正常启动到关闭的顺序
+
+  **关键规则 - aboutToDisappear 执行顺序**：
+   - ⚠️ 组件删除顺序：严格按照"从父到子"的顺序执行
+   - ⚠️ 正确顺序：Parent.aboutToDisappear → Child.aboutToDisappear
+   - ❌ 错误顺序：Child.aboutToDisappear → Parent.aboutToDisappear（这是错误的！）
+   - 示例：应用退出时，父组件 Parent 的 aboutToDisappear 必须先于子组件 Child 的 aboutToDisappear 执行
 
 6. 关于 build 函数的说明：
    - build 是 UI 声明式构建的核心方法，每次状态变化都可能触发重新执行

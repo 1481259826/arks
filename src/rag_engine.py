@@ -9,7 +9,7 @@ from langchain.prompts import PromptTemplate
 
 from .config import PROMPT_TEMPLATE
 from .vectorstore import VectorStoreManager
-from .utils import format_docs
+from .utils import format_docs, safe_print
 
 
 class RAGEngine:
@@ -87,10 +87,10 @@ class RAGEngine:
             分析结果（JSON 格式）
         """
         if self.rag_chain is None:
-            print("🔗 正在构建 RAG 推理链...")
+            safe_print("🔗 正在构建 RAG 推理链...")
             self.build_chain(api_key=api_key, api_base=api_base)
 
-        print("🤔 正在分析生命周期调用顺序...\n")
+        safe_print("🤔 正在分析生命周期调用顺序...\n")
         result = self.rag_chain.invoke(query)
 
         return result

@@ -1,0 +1,11 @@
+# 忽略所有生成的文件
+json/*.json
+visualizations/*.dot
+legacy/*.txt
+archives/*
+
+# 保留目录结构
+!json/.gitkeep
+!visualizations/.gitkeep
+!legacy/.gitkeep
+!archives/.gitkeep

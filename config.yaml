@@ -11,6 +11,6 @@ model_name: "deepseek-chat"
 temperature: 0
 
 # 文档处理配置
-chunk_size: 1000
-chunk_overlap: 200
+chunk_size: 1500
+chunk_overlap: 300
 retriever_k: 4

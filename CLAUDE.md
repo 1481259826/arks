@@ -39,8 +39,8 @@ Reads from `data/inputs/input.txt` by default, outputs to `data/outputs/`.
 # Custom input file
 python main.py analyze --input data/inputs/custom.txt
 
-# Custom output filename
-python main.py analyze --output result.txt
+# Custom output filename (automatically saves as .json)
+python main.py analyze --output result.json
 
 # Force reindex
 python main.py index --force
@@ -112,8 +112,15 @@ The codebase is organized into clean, separated modules:
      → Format context with metadata
      → Prompt template
      → LLM (OpenAI-compatible)
-     → JSON output (data/outputs/)
+     → JSON extraction & normalization
+     → JSON output (data/outputs/*.json)
    ```
+
+   **Output Processing**:
+   - Extracts JSON from markdown code blocks (if present)
+   - Normalizes `scope` values (`both` → `component`)
+   - Handles instance-based function names (e.g., `Component.method`)
+   - Saves as formatted `.json` file directly
 
 ### Configuration System
 
@@ -145,13 +152,19 @@ The system generates JSON with this structure:
 ### Directory Organization
 
 ```
-src/              # All source code (modular)
-data/             # All data files (docs, inputs, outputs)
-  ├── docs/       # PDF documentation
-  ├── inputs/     # ArkTS code scenarios
-  └── outputs/    # Generated analysis results
-notebooks/        # Jupyter notebooks for exploration
-vector_store/     # Chroma DB (auto-generated, in .gitignore)
+src/                  # All source code (modular)
+data/                 # All data files
+  ├── docs/           # PDF documentation
+  ├── inputs/         # ArkTS code scenarios
+  └── outputs/        # Generated analysis results (organized)
+      ├── json/       # Python RAG generated JSON files
+      ├── visualizations/  # TypeScript generated DOT files
+      ├── legacy/     # Old .txt format files
+      └── archives/   # Archived/temporary files
+scripts/              # Utility scripts
+  └── organize_outputs.py  # Organize output directory
+notebooks/            # Jupyter notebooks for exploration
+vector_store/         # Chroma DB (auto-generated, in .gitignore)
 ```
 
 ## Key Implementation Details

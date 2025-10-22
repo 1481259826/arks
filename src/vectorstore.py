@@ -11,6 +11,8 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 
+from .utils import safe_print
+
 
 class VectorStoreManager:
     """向量库管理器"""
@@ -48,30 +50,30 @@ class VectorStoreManager:
         """
         # 检查是否需要重新索引
         if self.persist_directory.exists() and not force_reindex:
-            print(f"⚠️  向量库已存在于 {self.persist_directory}")
+            safe_print(f"⚠️  向量库已存在于 {self.persist_directory}")
             response = input("是否重新索引？(y/n): ")
             if response.lower() != 'y':
-                print("❌ 取消索引操作")
+                safe_print("❌ 取消索引操作")
                 return self.load_vectorstore()
 
-        print(f"📚 正在加载 PDF: {pdf_path}")
+        safe_print(f"📚 正在加载 PDF: {pdf_path}")
         loader = PyPDFLoader(str(pdf_path))
         docs = loader.load()
-        print(f"✅ 已加载 {len(docs)} 页文档")
+        safe_print(f"✅ 已加载 {len(docs)} 页文档")
 
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap
         )
         splits = text_splitter.split_documents(docs)
-        print(f"✅ 已分割为 {len(splits)} 个文本块")
+        safe_print(f"✅ 已分割为 {len(splits)} 个文本块")
 
         self.vectorstore = Chroma.from_documents(
             documents=splits,
             embedding=self.embedding_function,
             persist_directory=str(self.persist_directory)
         )
-        print(f"✅ 向量索引已保存到: {self.persist_directory}")
+        safe_print(f"✅ 向量索引已保存到: {self.persist_directory}")
 
         return self.vectorstore
 
@@ -102,9 +104,9 @@ class VectorStoreManager:
             count = self.vectorstore._collection.count()
             if count == 0:
                 raise ValueError("向量数据库为空，请重新索引文档")
-            print(f"✅ 向量数据库已加载，包含 {count} 个文档块")
+            safe_print(f"✅ 向量数据库已加载，包含 {count} 个文档块")
         except Exception as e:
-            print(f"⚠️  无法检查向量库状态: {e}")
+            safe_print(f"⚠️  无法检查向量库状态: {e}")
 
         return self.vectorstore
 

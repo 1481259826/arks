@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 from src.config import Config
 from src.vectorstore import VectorStoreManager
 from src.rag_engine import RAGEngine
-from src.utils import read_input_file, save_output, print_banner
+from src.utils import read_input_file, save_output, print_banner, safe_print
 
 
 def index_documents(config: Config, force: bool = False):
@@ -37,7 +37,7 @@ def index_documents(config: Config, force: bool = False):
         force_reindex=force
     )
 
-    print("✅ 索引创建完成！")
+    safe_print("✅ 索引创建完成！")
 
 
 def analyze_lifecycle(config: Config, input_file: Path = None, output_file: str = None):
@@ -78,23 +78,23 @@ def analyze_lifecycle(config: Config, input_file: Path = None, output_file: str 
         )
 
         # 5. 输出结果
-        print("=" * 60)
-        print("📜 生命周期调用顺序分析结果")
-        print("=" * 60)
-        print(result)
-        print()
+        safe_print("=" * 60)
+        safe_print("📜 生命周期调用顺序分析结果")
+        safe_print("=" * 60)
+        safe_print(result)
+        safe_print("")
 
         # 6. 保存结果
         save_output(result, config.output_dir, output_file)
 
     except FileNotFoundError as e:
-        print(f"\n❌ 文件错误: {e}")
+        safe_print(f"\n❌ 文件错误: {e}")
         sys.exit(1)
     except ValueError as e:
-        print(f"\n❌ 数据错误: {e}")
+        safe_print(f"\n❌ 数据错误: {e}")
         sys.exit(1)
     except Exception as e:
-        print(f"\n❌ 执行失败: {type(e).__name__}: {e}")
+        safe_print(f"\n❌ 执行失败: {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

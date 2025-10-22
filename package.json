@@ -1,0 +1,34 @@
+{
+  "name": "arkui-lifecycle-analyzer",
+  "version": "1.0.0",
+  "description": "ArkUI Lifecycle Analysis RAG System with TypeScript call graph analyzer",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "example": "npm run build && node dist/example.js",
+    "integration": "npm run build && node dist/integration_example.js",
+    "convert": "npm run build && node dist/converter.js",
+    "visualize": "npm run build && node dist/visualize_all.js",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "arkui",
+    "lifecycle",
+    "rag",
+    "call-graph",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
