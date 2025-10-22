@@ -26,13 +26,25 @@ python main.py index
 ```
 This creates the vector store in `./vector_store/` from the PDF in `data/docs/`.
 
-**Normal analysis run**:
+**End-to-end analysis** (recommended - generates both JSON and DOT):
+```bash
+# One-command workflow: input.txt → JSON → DOT
+npm run full
+
+# Or use the Python script directly
+python scripts/full_analysis.py
+
+# With custom input/output
+python scripts/full_analysis.py --input data/inputs/custom.txt --output my_test
+```
+
+**Normal analysis run** (JSON only):
 ```bash
 python main.py analyze
 # or simply
 python main.py
 ```
-Reads from `data/inputs/input.txt` by default, outputs to `data/outputs/`.
+Reads from `data/inputs/input.txt` by default, outputs to `data/outputs/json/`.
 
 **Advanced usage**:
 ```bash
@@ -47,6 +59,9 @@ python main.py index --force
 
 # Custom config file
 python main.py analyze --config custom_config.yaml
+
+# Generate DOT files from existing JSON files
+npm run visualize
 ```
 
 ### Jupyter Notebook

@@ -12,6 +12,7 @@
     "integration": "npm run build && node dist/integration_example.js",
     "convert": "npm run build && node dist/converter.js",
     "visualize": "npm run build && node dist/visualize_all.js",
+    "full": "python scripts/full_analysis.py",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit"
   },

@@ -294,7 +294,32 @@ dot -Tpng output1.dot -o output1.png
 
 ## 完整工作流程
 
-### 端到端示例
+### 🚀 一键端到端分析（推荐）
+
+从 `input.txt` 直接生成 DOT 可视化文件：
+
+```bash
+# 首次运行需要索引文档
+conda activate 你的虚拟环境名
+python main.py index
+
+# 一键分析：自动生成 JSON + DOT
+npm run full
+
+# 或者使用 Python 直接调用
+python scripts/full_analysis.py
+
+# 指定输入和输出文件
+python scripts/full_analysis.py --input data/inputs/input1.txt --output my_test
+```
+
+**工作流程**：
+1. Python RAG 分析 → 生成 JSON (`data/outputs/json/`)
+2. TypeScript 调用图分析 → 生成 DOT (`data/outputs/visualizations/`)
+
+### 📋 分步执行示例
+
+如果需要更精细的控制，可以分步执行：
 
 ```bash
 # 1. Python: 索引文档（首次运行）
@@ -327,13 +352,13 @@ dot -Tpng data/outputs/visualizations/my_analysis.dot -o my_analysis.png
 
 | 脚本 | 说明 |
 |------|------|
+| `npm run full` | 🚀 **端到端分析（input.txt → JSON → DOT）** |
 | `npm run build` | 编译 TypeScript 到 `dist/` |
 | `npm run build:watch` | 监听模式编译 |
 | `npm run type-check` | 类型检查（不生成文件） |
 | `npm run example` | 运行所有功能示例 |
 | `npm run integration` | 运行集成示例 |
 | `npm run visualize` | 为所有 JSON 生成 DOT 文件 |
-| `npm run convert` | 转换旧 .txt 为 .json |
 | `npm run clean` | 清理编译输出 |
 
 ---
