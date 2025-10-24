@@ -6,7 +6,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -55,7 +54,7 @@ desktop.ini
 
 # Node.js / TypeScript
 node_modules/
-dist/
+dist/  # TypeScript compiled output
 *.tsbuildinfo
 npm-debug.log*
 yarn-debug.log*

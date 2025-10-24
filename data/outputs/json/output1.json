@@ -1,0 +1,53 @@
+{
+  "lifecycle": {
+    "functions": [
+      {
+        "name": "aboutToAppear",
+        "scope": "component",
+        "description": "组件即将出现时触发，用于初始化操作"
+      },
+      {
+        "name": "aboutToDisappear",
+        "scope": "component",
+        "description": "组件即将消失时触发，用于清理资源"
+      },
+      {
+        "name": "build",
+        "scope": "component",
+        "description": "UI声明式构建方法，状态变化时重新执行"
+      },
+      {
+        "name": "onDidBuild",
+        "scope": "component",
+        "description": "组件完成构建后触发，用于构建后的处理"
+      }
+    ],
+    "order": [
+      {
+        "pred": "SimpleDemo.aboutToAppear",
+        "succ": "SimpleDemo.build"
+      },
+      {
+        "pred": "SimpleDemo.build",
+        "succ": "SimpleDemo.onDidBuild"
+      },
+      {
+        "pred": "SimpleDemo.onDidBuild",
+        "succ": "SimpleChild.aboutToAppear"
+      },
+      {
+        "pred": "SimpleChild.aboutToAppear",
+        "succ": "SimpleChild.build"
+      },
+      {
+        "pred": "SimpleChild.build",
+        "succ": "SimpleChild.onDidBuild"
+      },
+      {
+        "pred": "SimpleDemo.aboutToDisappear",
+        "succ": "SimpleChild.aboutToDisappear"
+      }
+    ],
+    "dynamicBehavior": "当showChild状态从true变为false时，触发SimpleChild.aboutToDisappear；当从false变为true时，触发SimpleChild.aboutToAppear → SimpleChild.build → SimpleChild.onDidBuild。组件删除顺序严格遵循从父到子的原则，父组件的aboutToDisappear先于子组件执行。"
+  }
+}

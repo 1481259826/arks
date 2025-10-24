@@ -1,18 +1,13 @@
 {
   "name": "arkui-lifecycle-analyzer",
   "version": "1.0.0",
-  "description": "ArkUI Lifecycle Analysis RAG System with TypeScript call graph analyzer",
+  "description": "ArkUI Lifecycle Analysis RAG System with TypeScript call graph data structure",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/callgraph.js",
+  "types": "dist/callgraph.d.ts",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "example": "npm run build && node dist/example.js",
-    "integration": "npm run build && node dist/integration_example.js",
-    "convert": "npm run build && node dist/converter.js",
-    "visualize": "npm run build && node dist/visualize_all.js",
-    "full": "python scripts/full_analysis.py",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit"
   },

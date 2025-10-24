@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ArkUI Lifecycle Analysis RAG System - A modular Python project that uses RAG (Retrieval-Augmented Generation) to analyze ArkUI custom component lifecycle from PDF documentation. The system extracts lifecycle function call sequences from ArkTS code examples using vector search and LLM analysis.
 
+The TypeScript component provides a **simple, lightweight** call graph data structure to represent the analysis results - no complex algorithms or file I/O operations.
+
 ## Key Commands
 
 ### Initial Setup
@@ -25,18 +27,6 @@ cp .env.example .env
 python main.py index
 ```
 This creates the vector store in `./vector_store/` from the PDF in `data/docs/`.
-
-**End-to-end analysis** (recommended - generates both JSON and DOT):
-```bash
-# One-command workflow: input.txt → JSON → DOT
-npm run full
-
-# Or use the Python script directly
-python scripts/full_analysis.py
-
-# With custom input/output
-python scripts/full_analysis.py --input data/inputs/custom.txt --output my_test
-```
 
 **Normal analysis run** (JSON only):
 ```bash
@@ -59,20 +49,19 @@ python main.py index --force
 
 # Custom config file
 python main.py analyze --config custom_config.yaml
-
-# Generate DOT files from existing JSON files
-npm run visualize
 ```
 
-### Jupyter Notebook
-```bash
-jupyter notebook notebooks/arkUI.ipynb
-```
+### TypeScript Commands
 
-### Legacy Script
-The old monolithic script still works:
 ```bash
-python arkui_lifecycle_rag.py
+# Build the TypeScript call graph module
+npm run build
+
+# Type checking without emitting files
+npm run type-check
+
+# Clean build artifacts
+npm run clean
 ```
 
 ## Architecture
@@ -167,18 +156,27 @@ The system generates JSON with this structure:
 ### Directory Organization
 
 ```
-src/                  # All source code (modular)
-data/                 # All data files
+src/                  # Source code (6 files)
+  ├── __init__.py     # Python package
+  ├── config.py       # RAG configuration
+  ├── rag_engine.py   # RAG core engine
+  ├── vectorstore.py  # Vector store management
+  ├── utils.py        # Utility functions
+  └── callgraph.ts    # TypeScript call graph data structure ⭐
+
+data/                 # Data files
   ├── docs/           # PDF documentation
-  ├── inputs/         # ArkTS code scenarios
-  └── outputs/        # Generated analysis results (organized)
-      ├── json/       # Python RAG generated JSON files
-      ├── visualizations/  # TypeScript generated DOT files
-      └── archives/   # Archived/temporary files
-scripts/              # Utility scripts
-  └── organize_outputs.py  # Organize output directory
-notebooks/            # Jupyter notebooks for exploration
+  ├── inputs/         # ArkTS code scenarios (input.txt)
+  └── outputs/
+      ├── .gitignore  # Output directory git config
+      └── json/       # JSON output files (output1.json)
+
+node_modules/         # NPM dependencies (auto-generated, 26MB)
 vector_store/         # Chroma DB (auto-generated, in .gitignore)
+dist/                 # TypeScript compiled output (auto-generated)
+  ├── callgraph.js
+  ├── callgraph.d.ts
+  └── callgraph.js.map
 ```
 
 ## Key Implementation Details
@@ -200,6 +198,37 @@ vector_store/         # Chroma DB (auto-generated, in .gitignore)
 - **Too much noise**: Decrease `retriever_k` or `chunk_overlap`
 - **Unstable output**: Ensure `temperature=0` for deterministic JSON
 
-## Legacy Code
+## TypeScript Call Graph Module
 
-The old monolithic `arkui_lifecycle_rag.py` is still present for backward compatibility but is not the recommended approach. All new development should use the modular structure in `src/` with `main.py` as the entry point.
+**Location**: `src/callgraph.ts`
+
+**Purpose**: Provides a simple, lightweight data structure to represent lifecycle function call graphs. This module is designed for integration with ArkAnalyzer framework.
+
+**Key Design Principles**:
+- ✅ Simple graph data structure (nodes + edges)
+- ✅ JSON parsing from Python backend output
+- ✅ Type-safe TypeScript interfaces
+- ❌ NO file I/O operations (handled by external code)
+- ❌ NO visualization logic (use external tools)
+- ❌ NO complex graph algorithms (keep it simple)
+
+**Core API**:
+```typescript
+import { CallGraph } from './dist/callgraph.js';
+
+// Parse from JSON string
+const graph = CallGraph.fromJSON(jsonString);
+
+// Access data
+const nodes = graph.getNodes();  // All function nodes
+const edges = graph.getEdges();  // All call relationships
+
+// Stats
+console.log(`Nodes: ${graph.getNodeCount()}`);
+console.log(`Edges: ${graph.getEdgeCount()}`);
+```
+
+**Data Types**:
+- `FunctionNode`: {name, scope, description}
+- `Edge`: {pred, succ} - represents predecessor → successor call
+- `CallGraph`: Container with nodes and edges

@@ -10,21 +10,19 @@
 - **命令行工具**：支持索引和分析两种操作模式
 - **灵活配置**：支持 YAML 配置文件和命令行参数
 
-### TypeScript 调用图分析模块
-- **类型安全解析**：完整的 TypeScript 类型定义
-- **图算法**：拓扑排序、路径查找、环检测
-- **多种输入格式**：支持 JSON 字符串、对象、文件
-- **导出能力**：导出为 Graphviz DOT 格式或 JSON
-- **图统计分析**：获取根节点、叶节点、图统计信息
+### TypeScript 调用图数据结构
+- **简洁轻量**：仅提供核心图数据结构（节点 + 边）
+- **类型安全**：完整的 TypeScript 类型定义
+- **JSON 解析**：从 Python 后端生成的 JSON 构建图
+- **基础接口**：访问节点、边和统计信息
 
 ## 目录
 
 - [环境准备](#环境准备)
 - [项目结构](#项目结构)
 - [快速开始](#快速开始)
-  - [Part 1: Python RAG 分析](#part-1-python-rag-分析)
-  - [Part 2: TypeScript 调用图分析](#part-2-typescript-调用图分析)
-- [完整工作流程](#完整工作流程)
+  - [Python RAG 分析](#python-rag-分析)
+  - [TypeScript 使用](#typescript-使用)
 - [配置说明](#配置说明)
 - [API 参考](#api-参考)
 - [常见问题](#常见问题)
@@ -62,62 +60,49 @@
 
 ```
 arkUI/
-├── src/                          # Python 源代码
-│   ├── __init__.py
+├── src/                          # 源代码
+│   ├── __init__.py               # Python 包初始化
 │   ├── config.py                 # 配置管理和 Prompt 模板
-│   ├── rag_engine.py            # RAG 核心引擎
-│   ├── vectorstore.py           # 向量库管理
-│   ├── utils.py                 # 工具函数
-│   └── analysis/                # TypeScript 分析模块
-│       ├── types/
-│       │   └── lifecycle.ts     # 类型定义
-│       ├── graph/
-│       │   └── CallGraph.ts     # 调用图数据结构
-│       ├── parser/
-│       │   └── LifecycleParser.ts # JSON 解析器
-│       ├── index.ts             # 统一导出
-│       ├── example.ts           # 示例代码
-│       ├── integration_example.ts
-│       └── visualize_all.ts     # 批量可视化
+│   ├── rag_engine.py             # RAG 核心引擎
+│   ├── vectorstore.py            # 向量库管理
+│   ├── utils.py                  # 工具函数
+│   └── callgraph.ts              # TypeScript 调用图数据结构 ⭐
+│
 ├── data/
-│   ├── docs/                    # PDF 文档
+│   ├── docs/                     # PDF 文档
 │   │   └── arkUI自定义组件生命周期.pdf
-│   ├── inputs/                  # ArkTS 代码输入
-│   │   ├── input.txt
-│   │   └── input1.txt
-│   └── outputs/                 # 分析结果
-│       ├── json/                # JSON 输出
-│       ├── visualizations/      # DOT 可视化文件
-│       └── archives/            # 归档文件
-├── notebooks/
-│   └── arkUI.ipynb              # Jupyter 探索笔记
-├── scripts/                     # 🔧 辅助脚本
-│   ├── README.md                # 脚本说明
-│   ├── organize_outputs.py      # 整理输出目录
-│   └── verify_setup.py          # 验证系统配置
-├── docs/                        # 📚 项目文档
-│   ├── README.md                # 文档索引
-│   ├── API_REFERENCE.md         # TypeScript API 参考
-│   ├── TEST_RESULTS.md          # 测试报告
-│   ├── CHANGELOG.md             # 版本变更记录
-│   └── TYPESCRIPT_USAGE.md      # TypeScript 使用指南（已合并）
-├── vector_store/                # Chroma 向量库（自动生成）
-├── dist/                        # TypeScript 编译输出
-├── main.py                      # Python 主入口
-├── config.yaml                  # 配置文件
-├── package.json                 # Node.js 项目配置
-├── tsconfig.json                # TypeScript 配置
-├── requirements.txt             # Python 依赖
-├── .env.example                 # 环境变量示例
-├── CLAUDE.md                    # Claude Code 项目指南（必须在根目录）
-└── README.md                    # 本文档（项目主文档）
+│   ├── inputs/                   # ArkTS 代码输入
+│   │   └── input.txt
+│   └── outputs/                  # 分析结果
+│       ├── .gitignore            # 输出目录 Git 配置
+│       └── json/                 # JSON 输出文件
+│           └── output1.json      # 示例输出
+│
+├── node_modules/                 # NPM 依赖包（自动生成，26MB）
+├── vector_store/                 # Chroma 向量库（自动生成）
+├── dist/                         # TypeScript 编译输出（自动生成）
+│   ├── callgraph.js              # 编译后的 JS
+│   ├── callgraph.d.ts            # 类型声明文件
+│   └── callgraph.js.map          # Source Map
+│
+├── main.py                       # Python 主入口
+├── example.js                    # TypeScript 使用示例
+├── config.yaml                   # RAG 配置文件
+├── package.json                  # Node.js 项目配置
+├── package-lock.json             # NPM 依赖锁定
+├── tsconfig.json                 # TypeScript 配置
+├── requirements.txt              # Python 依赖
+├── .env.example                  # 环境变量示例
+├── .gitignore                    # Git 忽略配置
+├── CLAUDE.md                     # Claude Code 项目指南
+└── README.md                     # 本文档
 ```
 
 ---
 
 ## 快速开始
 
-### Part 1: Python RAG 分析
+### Python RAG 分析
 
 #### 1. 首次索引（仅第一次需要）
 
@@ -209,156 +194,57 @@ python main.py index --force
 
 ---
 
-### Part 2: TypeScript 调用图分析
+### TypeScript 使用
 
-#### 1. 解析 JSON 并分析调用图
+#### 构建项目
 
 ```bash
-# 运行示例
-npm run example
+# 编译 TypeScript
+npm run build
 
-# 运行集成示例
-npm run integration
+# 监听模式（开发时使用）
+npm run build:watch
 
-# 批量可视化所有 JSON 文件
-npm run visualize
+# 仅类型检查
+npm run type-check
 ```
 
-#### 2. 编程式使用
+#### 编程式使用
 
 ```typescript
-import { LifecycleParser } from './dist/index.js';
+import { CallGraph } from './dist/callgraph.js';
+import { readFileSync } from 'fs';
 
-// 从 Python 生成的 JSON 文件加载
-const graph = await LifecycleParser.fromFile('data/outputs/json/output1.json');
+// 从文件读取 JSON
+const jsonContent = readFileSync('data/outputs/json/output1.json', 'utf-8');
 
-// 获取统计信息
-const stats = graph.getStats();
-console.log(`节点数: ${stats.nodeCount}`);
-console.log(`边数: ${stats.edgeCount}`);
-console.log(`是否有环: ${stats.hasCycles}`);
+// 解析调用图
+const graph = CallGraph.fromJSON(jsonContent);
 
-// 拓扑排序（执行顺序）
-const order = graph.topologicalSort();
-console.log('执行顺序:', order.join(' → '));
+// 访问节点和边
+const nodes = graph.getNodes();
+const edges = graph.getEdges();
 
-// 查找路径
-const path = graph.findPath('SimpleDemo.aboutToAppear', 'SimpleChild.aboutToDisappear');
-if (path) {
-  console.log('路径:', path.join(' → '));
+// 打印基本信息
+console.log(`节点数: ${graph.getNodeCount()}`);
+console.log(`边数: ${graph.getEdgeCount()}`);
+
+// 遍历调用关系
+for (const edge of edges) {
+  console.log(`${edge.pred} -> ${edge.succ}`);
 }
 
-// 导出为 Graphviz DOT 格式
-const dotContent = graph.toDot();
-await writeFile('data/outputs/visualizations/graph.dot', dotContent);
+// 查看动态行为描述
+console.log(graph.getDynamicBehavior());
 ```
 
-#### 3. 生成可视化图片
-
-**方法 1：在线可视化（无需安装，推荐）**
-
-1. 访问 https://dreampuf.github.io/GraphvizOnline/
-2. 打开 `data/outputs/visualizations/output1.dot` 文件
-3. 复制全部内容，粘贴到网页左侧编辑器
-4. 右侧自动显示可视化调用图
-5. 下载 PNG 或 SVG 图片
-
-**方法 2：使用 Graphviz（本地生成）**
-
-安装 Graphviz：
-```bash
-# Windows
-choco install graphviz
-
-# macOS
-brew install graphviz
-
-# Linux
-sudo apt-get install graphviz
-```
-
-生成图片：
-```bash
-cd data/outputs/visualizations
-
-# 生成 SVG（矢量图，推荐）
-dot -Tsvg output1.dot -o output1.svg
-
-# 生成 PNG（位图）
-dot -Tpng output1.dot -o output1.png
-```
-
-📖 **详细指南**：查看 [docs/DOT_VISUALIZATION_GUIDE.md](docs/DOT_VISUALIZATION_GUIDE.md) 了解更多选项
-
----
-
-## 完整工作流程
-
-### 🚀 一键端到端分析（推荐）
-
-从 `input.txt` 直接生成 DOT 可视化文件：
-
-```bash
-# 首次运行需要索引文档
-conda activate 你的虚拟环境名
-python main.py index
-
-# 一键分析：自动生成 JSON + DOT
-npm run full
-
-# 或者使用 Python 直接调用
-python scripts/full_analysis.py
-
-# 指定输入和输出文件
-python scripts/full_analysis.py --input data/inputs/input1.txt --output my_test
-```
-
-**工作流程**：
-1. Python RAG 分析 → 生成 JSON (`data/outputs/json/`)
-2. TypeScript 调用图分析 → 生成 DOT (`data/outputs/visualizations/`)
-
-### 📋 分步执行示例
-
-如果需要更精细的控制，可以分步执行：
-
-```bash
-# 1. Python: 索引文档（首次运行）
-conda activate 你的虚拟环境名
-python main.py index
-
-# 2. Python: 分析 ArkTS 代码
-python main.py analyze --output my_analysis.json
-
-# 3. TypeScript: 解析调用图并生成统计
-npm run build
-node -e "
-import('./dist/index.js').then(async ({ LifecycleParser }) => {
-  const graph = await LifecycleParser.fromFile('data/outputs/json/my_analysis.json');
-  console.log('执行顺序:', graph.topologicalSort().join(' → '));
-  const stats = graph.getStats();
-  console.log('节点数:', stats.nodeCount);
-  console.log('边数:', stats.edgeCount);
-});
-"
-
-# 4. TypeScript: 导出可视化
-npm run visualize
-
-# 5. Graphviz: 生成图片
-dot -Tpng data/outputs/visualizations/my_analysis.dot -o my_analysis.png
-```
-
-### NPM 脚本参考
+#### NPM 脚本
 
 | 脚本 | 说明 |
 |------|------|
-| `npm run full` | 🚀 **端到端分析（input.txt → JSON → DOT）** |
 | `npm run build` | 编译 TypeScript 到 `dist/` |
 | `npm run build:watch` | 监听模式编译 |
 | `npm run type-check` | 类型检查（不生成文件） |
-| `npm run example` | 运行所有功能示例 |
-| `npm run integration` | 运行集成示例 |
-| `npm run visualize` | 为所有 JSON 生成 DOT 文件 |
 | `npm run clean` | 清理编译输出 |
 
 ---
@@ -447,59 +333,30 @@ result = engine.analyze(arkts_code)
 
 ### TypeScript API
 
-#### LifecycleParser 类
-
-| 方法 | 说明 |
-|------|------|
-| `fromJSON(jsonString: string): CallGraph` | 从 JSON 字符串解析 |
-| `fromObject(data: unknown): CallGraph` | 从 JavaScript 对象解析 |
-| `fromFile(filePath: string): Promise<CallGraph>` | 从文件读取并解析 |
-| `validate(graph: CallGraph): boolean` | 验证图的完整性 |
-
 #### CallGraph 类
 
-**节点操作**：
-- `addNode(func: LifecycleFunction): void`
-- `getNode(name: string): CallGraphNode | undefined`
-- `getAllNodes(): CallGraphNode[]`
-- `hasNode(name: string): boolean`
+**静态方法**：
+- `static fromJSON(jsonStr: string): CallGraph` - 从 JSON 字符串构建图
 
-**边操作**：
-- `addEdge(pred: string, succ: string): void`
-- `hasEdge(pred: string, succ: string): boolean`
-- `getSuccessors(name: string): string[]`
-- `getPredecessors(name: string): string[]`
-
-**图分析**：
-- `topologicalSort(): string[]` - Kahn 算法，O(V+E)
-- `findPath(start: string, end: string): string[] | null` - BFS，O(V+E)
-- `detectCycles(): boolean` - 环检测
-- `getStats()` - 获取图统计（节点数、边数、根节点、叶节点）
-
-**导入导出**：
-- `toDot(): string` - 导出为 Graphviz DOT 格式
-- `toJSON(): LifecycleResult` - 导出为 JSON
-- `getDynamicBehavior(): string`
-- `setDynamicBehavior(behavior: string): void`
+**访问方法**：
+- `getNodes(): FunctionNode[]` - 获取所有节点
+- `getEdges(): Edge[]` - 获取所有边
+- `getDynamicBehavior(): string | undefined` - 获取动态行为描述
+- `getNodeCount(): number` - 获取节点数量
+- `getEdgeCount(): number` - 获取边数量
 
 #### 类型定义
 
 ```typescript
-interface LifecycleFunction {
-  name: string;
-  scope: 'page' | 'component';
-  description: string;
+interface FunctionNode {
+  name: string;        // 函数名
+  scope: string;       // 作用域（page/component）
+  description: string; // 描述
 }
 
-interface CallOrder {
-  pred: string;  // 前驱函数
-  succ: string;  // 后继函数
-}
-
-interface LifecycleAnalysis {
-  functions: LifecycleFunction[];
-  order: CallOrder[];
-  dynamicBehavior: string;
+interface Edge {
+  pred: string;  // 前驱函数（调用者）
+  succ: string;  // 后继函数（被调用者）
 }
 ```
 
@@ -533,28 +390,15 @@ A:
 
 ### TypeScript 相关
 
-**Q: 如何处理解析错误？**
+**Q: 如何处理 JSON 解析错误？**
 
 ```typescript
-import { ParseError } from './dist/index.js';
+import { CallGraph } from './dist/callgraph.js';
 
 try {
-  const graph = await LifecycleParser.fromFile('invalid.json');
+  const graph = CallGraph.fromJSON(invalidJsonString);
 } catch (error) {
-  if (error instanceof ParseError) {
-    console.error('解析失败:', error.message);
-  }
-}
-```
-
-**Q: 图包含循环依赖怎么办？**
-
-```typescript
-if (graph.detectCycles()) {
-  console.log('图包含环，无法拓扑排序');
-  // 但其他操作仍可用
-  const stats = graph.getStats();
-  console.log('根节点:', stats.rootNodes);
+  console.error('解析失败:', error.message);
 }
 ```
 
@@ -562,20 +406,19 @@ if (graph.detectCycles()) {
 
 ```javascript
 // 确保 package.json 中有 "type": "module"
-import { LifecycleParser } from './dist/index.js';
+import { CallGraph } from './dist/callgraph.js';
+import { readFileSync } from 'fs';
 
-const graph = await LifecycleParser.fromFile('data.json');
-console.log(graph.getStats());
+const json = readFileSync('data/outputs/json/output1.json', 'utf-8');
+const graph = CallGraph.fromJSON(json);
+
+console.log(`节点数: ${graph.getNodeCount()}`);
+console.log(`边数: ${graph.getEdgeCount()}`);
 ```
 
-**Q: 如何处理大型调用图？**
+**Q: CallGraph 是否包含复杂的图算法？**
 
-A: CallGraph 使用邻接表，算法复杂度：
-- 添加节点/边: O(1)
-- 拓扑排序: O(V + E)
-- 路径查找: O(V + E)
-
-可高效处理数千节点的图。
+A: 不包含。CallGraph 是一个简单的数据结构，只提供基本的节点和边访问接口。如需拓扑排序、路径查找等算法，请在外部实现或使用其他图算法库。
 
 ---
 
@@ -597,28 +440,17 @@ A: CallGraph 使用邻接表，算法复杂度：
               → Prompt 模板 → LLM → JSON 输出
    ```
 
-### TypeScript 分析模块
+### TypeScript 调用图模块
 
-**组件架构**：
-- `types/lifecycle.ts`：类型定义
-- `graph/CallGraph.ts`：图数据结构和算法
-- `parser/LifecycleParser.ts`：JSON 解析和验证
-- `index.ts`：统一导出
+**设计理念**：
+- **简洁优先**：只提供核心数据结构，不包含复杂算法
+- **类型安全**：使用 TypeScript 严格类型系统
+- **易于集成**：可与 ArkAnalyzer 等框架无缝集成
 
-**算法**：
-- **拓扑排序**：Kahn 算法（O(V+E)）
-- **路径查找**：广度优先搜索（O(V+E)）
-- **环检测**：基于拓扑排序
-
-### 实例映射机制
-
-**关键设计**：
-- `functions` 数组：只包含基础函数名（如 `aboutToAppear`）
-- `order` 数组：包含完整实例名（如 `SimpleDemo.aboutToAppear`）
-- TypeScript 解析器自动创建实例节点：
-  1. 从 `functions` 构建基础函数映射
-  2. 从 `order` 提取所有实例名
-  3. 为每个实例创建独立节点，继承基础函数的元数据
+**核心功能**：
+- 从 JSON 解析构建图结构
+- 访问节点（函数）和边（调用关系）
+- 获取基本统计信息
 
 ---
 
@@ -633,38 +465,26 @@ conda activate 你的虚拟环境名
 python scripts/verify_setup.py
 ```
 
-### 运行完整测试
+### 运行测试
 
 ```bash
-# Python 分析
-conda activate CreatPPT
+# Python 分析测试
+conda activate 你的虚拟环境名
 python main.py analyze --output test.json
 
-# TypeScript 解析
+# TypeScript 编译测试
 npm run build
-node dist/example.js
-
-# 可视化
-npm run visualize
+npm run type-check
 ```
-
-查看测试报告：
-- [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md)：完整测试结果
-- [docs/CHANGELOG.md](docs/CHANGELOG.md)：版本变更记录
 
 ---
 
 ## 更多资源
 
 ### 项目文档
-- **📚 文档索引**：[docs/README.md](docs/README.md) - 所有文档的导航中心
-- **🔧 Claude Code 指南**：[CLAUDE.md](CLAUDE.md) - 项目架构和开发指南（AI 助手必读）
-- **📖 TypeScript API 参考**：[docs/API_REFERENCE.md](docs/API_REFERENCE.md) - 完整 API 文档
-- **✅ 测试报告**：[docs/TEST_RESULTS.md](docs/TEST_RESULTS.md) - 功能验证和性能统计
-- **📝 变更记录**：[docs/CHANGELOG.md](docs/CHANGELOG.md) - 版本历史
+- **🔧 Claude Code 指南**：[CLAUDE.md](CLAUDE.md) - 项目架构和开发指南
 
 ### 外部资源
-- **Graphviz 文档**：https://graphviz.org/documentation/
 - **LangChain 文档**：https://python.langchain.com/
 - **HarmonyOS 开发文档**：https://developer.harmonyos.com/
 
